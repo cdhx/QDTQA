@@ -1,0 +1,308 @@
+实体链接（不包括消歧，即获取的是候选实体）:
+    python detect_and_link_entity.py --split test
+    python detect_and_link_entity.py --split dev
+    python detect_and_link_entity.py --split train
+
+    # CWQ
+        # BERT_NER+FACC1
+        python detect_and_link_entity.py --dataset CWQ --linker FACC1 --split test
+        # ELQ
+        python detect_and_link_entity.py --dataset CWQ --linker ELQ --split test
+
+    # WEBQSP
+        # BERT_NER+FACC1
+        python detect_and_link_entity.py --dataset WEBQSP --linker FACC1 --split test
+        # ELQ
+        python detect_and_link_entity.py --dataset WEBQSP --linker ELQ --split test
+
+    
+实体消歧:
+    训练：
+        # CWQ
+        CUDA_VISIBLE_DEVICES=2 sh scripts/run_disamb.sh train disamb0215
+        # WEBQSP
+        CUDA_VISIBLE_DEVICES=2 sh scripts/run_disamb_WebQSP.sh train disamb0423
+    
+    sh scripts/run_disamb.sh train <exp_id>
+    预测：
+        # CWQ
+        CUDA_VISIBLE_DEVICES=2 sh scripts/run_disamb.sh predict disamb0215 test
+        CUDA_VISIBLE_DEVICES=2 sh scripts/run_disamb.sh predict disamb0215 dev
+        CUDA_VISIBLE_DEVICES=2 sh scripts/run_disamb.sh predict disamb0215 train
+
+        # WEBQSP
+        CUDA_VISIBLE_DEVICES=2 sh scripts/run_disamb_WebQSP.sh predict disamb0423 test
+        CUDA_VISIBLE_DEVICES=2 sh scripts/run_disamb_WebQSP.sh predict disamb0423 train
+    sh scripts/run_disamb.sh predict <exp_id> <split_id>
+
+得到FACC1最终实体链接结果：
+    执行get_final_entity_linking.py中的
+    `get_candidate_entity_linking_with_logits_webqsp`方法
+    和`get_candidate_entity_linking_with_logits_cwq`方法
+
+枚举实体:
+    python enumerate_candidates.py --split test --pred_file results/disamb/CWQ_test/predictions.json
+
+枚举关系:
+    python enumerate_relations.py --split test --pred_file results/disamb/CWQ_test/predictions.json
+    python enumerate_relations.py --split dev --pred_file results/disamb/CWQ_dev/predictions.json
+    python enumerate_relations.py --split train 
+
+
+训练 候选关系分类
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_classify.sh train rel_classify
+
+
+训练 句子->qdt:
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_qdtgen.sh train qdtgen
+预测 句子->qdt:
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_qdtgen.sh predict qdtgen test
+    # CUDA_VISIBLE_DEVICES=0 sh scripts/run_qdtgen.sh predict qdtgen test
+
+
+训练 句子->sparql:
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_sparql_gen_nlq_qdt.sh train sparql_nlq_qdt
+
+预测 句子->sparql:
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_sparql_gen_nlq_qdt.sh predict sparql_nlq_qdt test
+
+
+训练 句子->s_expr: 
+    
+    # only use nlq
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq.sh train nlq_only
+    # only use nlq on BART
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_bart.sh train nlq_only_bart
+    # use nlq and qdt
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_nlq_qdt.sh train nlq_qdt
+    # use nlq, qdt and gold entity
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_nlq_qdt_goldEnt.sh train nlq_qdt_goldEnt
+    # use nlq, qdt and cand entity
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_qdt_candEnt.sh train nlq_qdt_candEnt
+    # use nlq, qdt, gold entity and gold relation
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_qdt_goldEnt_goldRel.sh train nlq_qdt_goldEnt_goldRel
+
+    
+    # use nlq and newqdt
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_newqdt.sh train nlq_newqdt
+    # use nlq, newqdt and cand entity
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_newqdt_candEnt.sh train nlq_newqdt_candEnt
+    # use nlq, newqdt and gold entity
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_newqdt_goldEnt.sh train nlq_newqdt_goldEnt
+
+    # use nlq, newqdt and cand entity and cand relation
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen_nlq_newqdt_candEnt_candRel.sh train nlq_newqdt_candEnt_candRel
+    # use nlq, newqdt and cand entity and top 1 cand relation
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_nlq_newqdt_candEnt_candRel_top1.sh train nlq_newqdt_candEnt_candRel_top1
+    # use nlq, newqdt and cand entity and top 3 cand relation
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen_nlq_newqdt_candEnt_candRel_top3.sh train nlq_newqdt_candEnt_candRel_top3
+    # use nlq, newqdt and cand entity and top 4 cand relation
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen_nlq_newqdt_candEnt_candRel_top4.sh train nlq_newqdt_candEnt_candRel_top4
+    # use nlq, newqdt and cand entity and top 5 cand relation
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_nlq_newqdt_candEnt_candRel_top5.sh train nlq_newqdt_candEnt_candRel_top5
+    # use nlq, newqdt and cand entity and gold relation
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_nlq_newqdt_candEnt_goldRel.sh train nlq_newqdt_candEnt_goldRel
+
+    # use nlq, newqdt and gold entity and gold relation
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_newqdt_goldEnt_goldRel.sh train nlq_newqdt_goldEnt_goldRel
+    
+    
+    # use nlq and gold entity
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_nlq_goldEnt.sh train nlq_goldEnt
+    # use nlq and cand entity
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_candEnt.sh train nlq_candEnt
+    # use nlq and gold entity and gold relation
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen_nlq_goldEnt_goldRel.sh train nlq_goldEnt_goldRel
+
+
+    # new qdt
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_newqdt.sh train newqdt
+    # new qdt and cand Entity
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_newqdt_candEnt.sh train newqdt_candEnt
+    用法：
+    sh scripts/run_gen.sh train <exp_id>. 
+    训练输出保存在exps/gen_grail_<exp_id>.
+
+预测 句子->s_expr:
+
+    新版预测:
+    # only use qdt
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq.sh predict nlq_only test
+    # nlq and qdt
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_nlq_qdt.sh predict nlq_qdt test
+    # nlq and new qdt
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_nlq_newqdt.sh predict nlq_newqdt test
+
+    # nlq, qdt and gold entity
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_nlq_qdt_goldEnt.sh predict nlq_qdt_goldEnt test
+    # nlq, qdt and gold relation
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_qdt_goldEnt_goldRel.sh predict nlq_qdt_goldEnt_goldRel test
+
+    # nlq, qdt and cand entity
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_qdt_candEnt.sh predict nlq_qdt_candEnt test
+    # nlq, new qdt and cand entity
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_newqdt_candEnt.sh predict nlq_newqdt_candEnt test
+    # nlq, new qdt and cand entity and cand relation
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_newqdt_candEnt_candRel.sh predict nlq_newqdt_candEnt_candRel test
+    # nlq, new qdt and cand entity and cand relation top 1
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_newqdt_candEnt_candRel_top1.sh predict nlq_newqdt_candEnt_candRel test
+    # nlq, new qdt and cand entity and gold relation top 1
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_newqdt_candEnt_goldRel_top1.sh predict nlq_newqdt_candEnt_goldRel_top1 test
+
+    # nlq and gold entity
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_goldEnt.sh predict nlq_goldEnt test
+    # nlq and cand entity
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_nlq_candEnt.sh predict nlq_candEnt test
+
+    # nlq and gold entity and gold relation
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_nlq_goldEnt_goldRel.sh predict nlq_goldEnt_goldRel test
+
+
+    # new qdt
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_newqdt.sh predict newqdt test
+
+    # new qdt and cand entity
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_gen_newqdt_candEnt.sh predict newqdt_candEnt test
+
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen.sh predict try0106 test  # question only
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen.sh predict try0111 dev  # question with qdt
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen_with_qdt.sh predict try0124 test  
+    
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen_with_qdt.sh predict try0208 test  
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen_with_qdt.sh predict try0208 dev
+
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen_with_qdt.sh predict try0209 test
+    
+    CUDA_VISIBLE_DEVICES=2 sh scripts/run_gen_with_qdt.sh predict try0219 test
+    
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_gen_qdt_goldEnt_goldRel.sh predict qdt_goldEnt_goldRel test
+
+    sh scripts/run_gen.sh predict <exp_id> <split>
+
+SExpr转SPARQL执行:
+    
+    # nlq only
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_only/top_k_predictions.json
+    
+    # nlq and qdt
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_qdt/top_k_predictions.json
+
+    # nlq and new qdt
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_newqdt/top_k_predictions.json
+
+    # nlq, qdt and gold entity
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_qdt_goldEnt/top_k_predictions.json
+    
+    # nlq, qdt and cand entity
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_qdt_candEnt/top_k_predictions.json
+    
+    # nlq, newqdt and cand entity
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_newqdt_candEnt/top_k_predictions.json
+
+    # nlq, newqdt and cand entity and cand relations
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_newqdt_candEnt_candRel/top_k_predictions.json
+
+    # nlq, newqdt and cand entity and cand relations top 1
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_newqdt_candEnt_candRel_top1/top_k_predictions.json
+    
+    # nlq, newqdt and cand entity and cand relations top 1
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_newqdt_candEnt_candRel_top1/top_k_predictions.json
+
+    # nlq, newqdt and cand entity and gold relations top 1
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_newqdt_candEnt_goldRel_top1/top_k_predictions.json
+
+    # nlq, qdt and gold entity, gold relation
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_qdt_goldEnt_goldRel/top_k_predictions.json
+    
+    # nlq, gold entity
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_goldEnt/top_k_predictions.json
+    # nlq, cand entity
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_candEnt/top_k_predictions.json
+    # nlq, gold entity and gold relation
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_goldEnt_goldRel/top_k_predictions.json
+
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_nlq_newqdt_candEnt_20/top_k_predictions.json
+
+    # new qdt
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_newqdt/top_k_predictions.json
+
+    # new qdt and candEnt
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_newqdt_candEnt/top_k_predictions.json
+    
+
+    python eval_topk_prediction.py --split test --pred_file results/gen/CWQ_test_try0106/top_k_predictions.json
+    
+    用法：
+    python eval_topk_prediction.py --split <split> --pred_file <pred_file>
+
+评估Evaluate:
+    # nlq only
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_nlq_only/gen_sexpr_results.txt
+    # nlq and qdt
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_nlq_qdt/gen_sexpr_results.txt
+    # nlq and new qdt
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_nlq_newqdt/gen_sexpr_results.txt
+    # nlq, qdt and gold Entity
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_nlq_qdt_goldEnt/gen_sexpr_results.txt
+    # nlq, qdt and cand Entity
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_nlq_qdt_candEnt/gen_sexpr_results.txt
+    # nlq, new qdt and cand Entity
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_nlq_newqdt_candEnt/gen_sexpr_results.txt
+    # nlq, qdt, gold Entity and gold Relation
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_nlq_qdt_goldEnt_goldRel/gen_sexpr_results.txt
+
+    # nlq and gold Entity
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_nlq_goldEnt/gen_sexpr_results.txt
+    # nlq and cand Entity
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_nlq_candEnt/gen_sexpr_results.txt
+    # nlq and gold Entity, gold Relation
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_nlq_goldEnt_goldRel/gen_sexpr_results.txt
+
+    # new qdt
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_newqdt/gen_sexpr_results.txt
+    # new qdt and candEnt
+    python cwq_evaluate.py --split test --pred_file results/gen/CWQ_test_newqdt_candEnt/gen_sexpr_results.txt
+
+    用法:
+    python cwq_evaluate.py --split <split> --pred_file <pred_file>
+
+
+MultiTask T5:
+CUDA_VISIBLE_DEVICES sh scripts/run_t5_multitask_not_lower.sh 
+
+训练：
+    # 1 epoch
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_t5_multitask_not_lower_1epoch.sh train not_lower_1epoch False
+    # 5 epoch
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_t5_multitask_not_lower_5epoch.sh train not_lower_5epoch False
+    # 10 epoch
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_t5_multitask_not_lower_10epoch.sh train not_lower_10epoch False
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_t5_multitask_not_lower_10epoch.sh train not_lower_10epoch_retry False
+    # 10 epoch, not use qdt
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_t5_multitask_no_qdt_not_lower_10epoch.sh train no_qdt_not_lower_10epoch False
+    # 15 epoch
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_t5_multitask_not_lower_15epoch.sh train not_lower_15epoch False
+
+预测：
+    # 1 epoch
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_t5_multitask_not_lower_1epoch.sh predict not_lower_1epoch False test
+    # 5 epoch
+    CUDA_VISIBLE_DEVICES=1 sh scripts/run_t5_multitask_not_lower_5epoch.sh predict not_lower_5epoch False test
+    # 10 epoch
+    CUDA_VISIBLE_DEVICES=0 sh scripts/run_t5_multitask_not_lower_10epoch.sh predict not_lower_10epoch False test 50 2
+    
+
+QA评估：
+
+    # epoch 10, beam 10
+    python eval_topk_prediction_new.py --split test --pred_file exps/gen_multitask/CWQ_not_lower_10epoch/beam_10_top_k_predictions.json
+
+    # epoch 10, beam 50
+    python eval_topk_prediction_new.py --split test --pred_file exps/gen_multitask/CWQ_not_lower_10epoch_retry/beam_50_top_k_predictions.json
+
+    # epoch 10, not use qdt
+    python eval_topk_prediction_new.py --split test --pred_file exps/gen_multitask/CWQ_no_qdt_not_lower_10epoch/beam_50_top_k_predictions.json
+    
+
+    # epoch 15, beam 50
+    python eval_topk_prediction_new.py --split test --pred_file exps/gen_multitask/CWQ_not_lower_15epoch/beam_50_top_k_predictions.json

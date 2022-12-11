@@ -1,0 +1,1 @@
+The query logs of PointerNetworkQA will be stored in this directory.
