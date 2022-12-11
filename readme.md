@@ -18,10 +18,7 @@ To install, run ```pip install -r requirements.txt``` in the derectory```Clue-De
 
 ### Data and cache
 
-The data of QDTrees can be found in [here](https://drive.google.com/drive/folders/1gxVyXFkfMvM3lbrQ4sL6s5P-9yGgn-2Y) 
-
-Please put them under the ```Clue-Decipher/data``` directory for training decomposition model.
-
+ 
 The cache of QDTQA can be found in [here](https://drive.google.com/drive/folders/140smk-HdbtMeI2wcfh-7O82ThNyVqsjW?usp=share_link)
 
 Please put them under the ```QDT2Expr``` directory for running QA model.
