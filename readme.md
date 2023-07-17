@@ -107,3 +107,16 @@ A modified version of EDGQA that can be run with EDG format decomposition files 
 Scripts and resources for converting QDT format to EDG format are available in ```EDGQA_Exp/QDT2EDG_convert```. 
 
 Shell scripts for running tests are in ```EDGQA_Exp/run```.
+
+
+# Cite
+```
+@article{Huang_Cheng_Shu_Bao_Qu_2023,
+title={Question Decomposition Tree for Answering Complex Questions over Knowledge Bases},
+volume={37},
+url={https://ojs.aaai.org/index.php/AAAI/article/view/26519}, DOI={10.1609/aaai.v37i11.26519},
+number={11},
+journal={Proceedings of the AAAI Conference on Artificial Intelligence}, author={Huang, Xiang and Cheng, Sitao and Shu, Yiheng and Bao, Yuheng and Qu, Yuzhong}, year={2023},
+month={Jun.},
+pages={12924-12932} }
+```
