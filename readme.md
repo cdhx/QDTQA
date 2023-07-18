@@ -19,7 +19,7 @@ To install, run ```pip install -r requirements.txt``` in the derectory```Clue-De
 ### Data and cache
 
  
-The cache of QDTQA can be found in [here]([https://drive.google.com/drive/folders/140smk-HdbtMeI2wcfh-7O82ThNyVqsjW?usp=share_link](https://drive.google.com/file/d/1GEfsE9jiYhWOaiztJJWX8V4rCKC971Yz/view?usp=sharing))
+The cache of QDTQA can be found in [here](https://drive.google.com/file/d/1GEfsE9jiYhWOaiztJJWX8V4rCKC971Yz/view?usp=sharing)
 
 Please put them under the ```QDT2Expr``` directory for running QA model.
 
