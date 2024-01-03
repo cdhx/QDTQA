@@ -3,6 +3,8 @@
 Code for AAAI 2023 research track paper "Question Decomposition Tree for Answering Complex Questions over Knowledge
 Bases"
 
+[Download Paper](https://ojs.aaai.org/index.php/AAAI/article/view/26519/26291)
+
 ## Requirements
 
 ### Knowledge Base
